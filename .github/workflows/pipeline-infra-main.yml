@@ -1,4 +1,4 @@
-name: Pipeline Infra Base
+name: Main Pipeline Infra
 
 on:
   push:

@@ -108,18 +108,31 @@ decide o que a pipeline faz, e todo push em `main` dispara a esteira.
 | `rds_sg_id`           | ID do security group do RDS            |
 | `ecr_url`             | URL do repositorio ECR                 |
 
+## Pipelines
+
+- `pipeline-infra-feature.yml`: dispara em push para `feature/*`. Roda
+  `terraform fmt -check`, `init`, `validate` e `plan`, e abre PR automatico
+  para `main` se tudo passar — equivalente ao `feature.yml` do repo da
+  aplicacao (build+test), so que validando a infra em vez de compilar Java.
+- `pipeline-infra-main.yml`: dispara em push para `main` (ou
+  `workflow_dispatch`). Le `infra/pipeline.conf` e aplica ou destroi conforme
+  `DESTROY` — equivalente ao `main.yml` do repo da aplicacao.
+
 ## Estrutura
 
 ```
 mechanical-hub-infra-base/
-├── .github/workflows/pipeline-infra.yml
+├── .github/workflows/
+│   ├── pipeline-infra-feature.yml
+│   └── pipeline-infra-main.yml
 ├── infra/
 │   ├── providers.tf
 │   ├── variables.tf
 │   ├── vpc.tf
 │   ├── sg.tf
 │   ├── ecr.tf
-│   └── outputs.tf
+│   ├── outputs.tf
+│   └── pipeline.conf
 ├── .gitignore
 └── README.md
 ```
