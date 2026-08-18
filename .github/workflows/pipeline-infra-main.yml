@@ -61,10 +61,6 @@ jobs:
         working-directory: infra
         run: terraform init
 
-      - name: Terraform Validate
-        working-directory: infra
-        run: terraform validate
-
       - name: Terraform Destroy
         if: needs.config.outputs.destroy == 'true'
         working-directory: infra

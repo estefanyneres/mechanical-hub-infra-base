@@ -16,14 +16,6 @@ jobs:
       - name: Checkout do codigo
         uses: actions/checkout@v4
 
-      - name: Configurar credenciais AWS
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: us-east-1
-
       - name: Configurar Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -35,15 +27,11 @@ jobs:
 
       - name: Terraform Init
         working-directory: infra
-        run: terraform init
+        run: terraform init -backend=false
 
       - name: Terraform Validate
         working-directory: infra
         run: terraform validate
-
-      - name: Terraform Plan
-        working-directory: infra
-        run: terraform plan -input=false
 
   create-pr:
     name: Criar PR para Main
@@ -65,7 +53,7 @@ jobs:
           else
             gh pr create \
               --title "Merge $BRANCH para main" \
-              --body "PR criado automaticamente pela pipeline apos terraform fmt/validate/plan passarem." \
+              --body "PR criado automaticamente pela pipeline apos terraform fmt/init/validate passarem." \
               --base main \
               --head "$BRANCH"
             echo "PR criado com sucesso."

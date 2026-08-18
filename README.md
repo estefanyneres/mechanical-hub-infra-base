@@ -111,12 +111,17 @@ decide o que a pipeline faz, e todo push em `main` dispara a esteira.
 ## Pipelines
 
 - `pipeline-infra-feature.yml`: dispara em push para `feature/*`. Roda
-  `terraform fmt -check`, `init`, `validate` e `plan`, e abre PR automatico
-  para `main` se tudo passar — equivalente ao `feature.yml` do repo da
-  aplicacao (build+test), so que validando a infra em vez de compilar Java.
+  `terraform fmt -check`, `init -backend=false` e `validate` — checagem de
+  sintaxe/consistencia do HCL, sem credenciais AWS e sem depender do bucket
+  do state ja existir. Abre PR automatico para `main` se tudo passar —
+  equivalente ao `feature.yml` do repo da aplicacao (build+test), so que
+  validando a infra em vez de compilar Java.
 - `pipeline-infra-main.yml`: dispara em push para `main` (ou
-  `workflow_dispatch`). Le `infra/pipeline.conf` e aplica ou destroi conforme
-  `DESTROY` — equivalente ao `main.yml` do repo da aplicacao.
+  `workflow_dispatch`). Cria/versiona o bucket do state, roda `terraform
+  init` contra o backend real e le `infra/pipeline.conf` pra aplicar ou
+  destruir conforme `DESTROY` — equivalente ao `main.yml` do repo da
+  aplicacao. E o unico ponto que fala com a AWS de verdade; por isso nao
+  repete o `validate` que ja rodou na feature.
 
 ## Estrutura
 
