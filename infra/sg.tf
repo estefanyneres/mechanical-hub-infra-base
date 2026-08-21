@@ -58,9 +58,29 @@ resource "aws_security_group" "app" {
   })
 }
 
+resource "aws_security_group" "lambda_auth" {
+  name        = "${var.projectName}-lambda-auth-sg"
+  description = "Security group da Lambda de autenticacao de clientes"
+  vpc_id      = aws_vpc.vpc.id
+
+  tags = merge(var.tags, {
+    Name = "${var.projectName}-lambda-auth-sg"
+  })
+}
+
+resource "aws_security_group_rule" "lambda_auth_to_rds" {
+  type                     = "egress"
+  from_port                = 5432
+  to_port                  = 5432
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.lambda_auth.id
+  source_security_group_id = aws_security_group.rds.id
+  description              = "PostgreSQL para o RDS"
+}
+
 resource "aws_security_group" "rds" {
   name        = "${var.projectName}-rds-sg"
-  description = "Security group do RDS, recebe trafego somente da aplicacao"
+  description = "Security group do RDS, recebe trafego somente da aplicacao e da Lambda de autenticacao"
   vpc_id      = aws_vpc.vpc.id
 
   ingress {
@@ -69,6 +89,14 @@ resource "aws_security_group" "rds" {
     to_port         = 5432
     protocol        = "tcp"
     security_groups = [aws_security_group.app.id]
+  }
+
+  ingress {
+    description     = "PostgreSQL a partir da Lambda de autenticacao"
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    security_groups = [aws_security_group.lambda_auth.id]
   }
 
   egress {

@@ -28,6 +28,11 @@ output "rds_sg_id" {
   value       = aws_security_group.rds.id
 }
 
+output "lambda_auth_sg_id" {
+  description = "ID do security group da Lambda de autenticacao de clientes"
+  value       = aws_security_group.lambda_auth.id
+}
+
 output "ecr_url" {
   description = "URL do repositorio ECR"
   value       = aws_ecr_repository.app.repository_url

@@ -1,7 +1,7 @@
 # mechanical-hub-infra-base
 
 Recursos de base do projeto mechanical-hub: VPC, subnets, Internet Gateway, route
-tables, os tres security groups (`alb`, `app`, `rds`) e o repositorio ECR.
+tables, os security groups (`alb`, `app`, `rds`, `lambda_auth`) e o repositorio ECR.
 
 A sessao do AWS Academy encerra a cada 4h, entao este repo e destruido e recriado
 diariamente (`terraform apply` no inicio da sessao, `terraform destroy` no fim),
@@ -9,26 +9,36 @@ pelo `pipeline.conf` igual ao repo da aplicacao. Por isso o ECR usa
 `force_delete = true`, igual ao repo da aplicacao: o destroy diario precisa apagar
 o repositorio mesmo com imagens publicadas dentro, sem falhar.
 
-## Por que os tres security groups estao aqui
+## Por que os security groups estao aqui
 
 Hoje (no repo da aplicacao) `rds.tf` referencia o security group do cluster EKS
 diretamente. A AWS nao deixa apagar um SG referenciado por regra de outro security
 group, entao destruir um repo de infra de ciclo curto antes de outro falharia no meio,
 com recursos parcialmente destruidos.
 
-Com os tres SGs na base, os repos de ciclo curto (infra-k8s, infra-database,
-api-gateway) apenas consomem via **data source**. O conflito e eliminado, nao
-contornado.
+Com os SGs na base, os repos de ciclo curto (infra-k8s, infra-database, auth-lambda,
+api-gateway) apenas consomem via **data source** — nunca criam o proprio SG. O
+conflito e eliminado, nao contornado.
 
-| SG    | Regra                                    |
-|-------|-------------------------------------------|
-| alb   | ingress 80/443 de `0.0.0.0/0`             |
-| app   | ingress 30080 com origem no SG do `alb`   |
-| rds   | ingress 5432 com origem no SG do `app`    |
+| SG            | Regra                                                  |
+|---------------|----------------------------------------------------------|
+| alb           | ingress 80/443 de `0.0.0.0/0`                          |
+| app           | ingress 30080 com origem no SG do `alb`                |
+| rds           | ingress 5432 com origem no SG do `app` e do `lambda_auth` |
+| lambda_auth   | egress 5432 para o SG do `rds` (sem ingress proprio — nada precisa iniciar conexao com a Lambda por IP) |
 
 O SG do ALB fica aqui mesmo o ALB em si morando no repo do API Gateway: se nascesse
 la, o SG do `app` (que esta na base) teria que referenciar um SG de outro repo,
-recriando a dependencia cruzada que este repo existe para eliminar.
+recriando a dependencia cruzada que este repo existe para eliminar. O mesmo raciocinio
+vale pro `lambda_auth`: ele e criado aqui, pronto, e o repo `auth-lambda` so o busca
+via data source e anexa na funcao — sem nunca precisar que a base "olhe pra frente"
+pra Lambda.
+
+Atencao tecnica: `lambda_auth` e `rds` se referenciam nos dois sentidos (rds libera
+entrada do lambda_auth; lambda_auth libera saida pro rds). Regras inline dos dois
+lados geram um ciclo que o Terraform rejeita — por isso a regra de saida do
+`lambda_auth` esta declarada como um `aws_security_group_rule` solto, e nao inline
+dentro do resource do SG.
 
 ## Descoberta entre repos
 
@@ -106,6 +116,7 @@ decide o que a pipeline faz, e todo push em `main` dispara a esteira.
 | `alb_sg_id`           | ID do security group do ALB            |
 | `app_sg_id`           | ID do security group da aplicacao      |
 | `rds_sg_id`           | ID do security group do RDS            |
+| `lambda_auth_sg_id`   | ID do security group da Lambda de autenticacao |
 | `ecr_url`             | URL do repositorio ECR                 |
 
 ## Pipelines
