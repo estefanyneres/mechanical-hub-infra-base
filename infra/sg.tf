@@ -83,16 +83,13 @@ resource "aws_security_group" "rds" {
   description = "Security group do RDS, recebe trafego somente da aplicacao e da Lambda de autenticacao"
   vpc_id      = aws_vpc.vpc.id
 
-  # Temporariamente removido para testar o handler de DataAccessException
-  # (GlobalExceptionHandler) contra uma falha real de conexao com o banco.
-  # Reverter apos o teste.
-  # ingress {
-  #   description     = "PostgreSQL a partir da aplicacao"
-  #   from_port       = 5432
-  #   to_port         = 5432
-  #   protocol        = "tcp"
-  #   security_groups = [aws_security_group.app.id]
-  # }
+  ingress {
+    description     = "PostgreSQL a partir da aplicacao"
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    security_groups = [aws_security_group.app.id]
+  }
 
   ingress {
     description     = "PostgreSQL a partir da Lambda de autenticacao"
