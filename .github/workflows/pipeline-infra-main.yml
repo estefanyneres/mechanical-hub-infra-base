@@ -7,7 +7,7 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  STATE_BUCKET: mechanical-hub-tfstate
+  STATE_BUCKET: mechanical-hub-tfstate-905418400294
 
 jobs:
   config:
