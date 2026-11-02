@@ -37,3 +37,8 @@ output "ecr_url" {
   description = "URL do repositorio ECR"
   value       = aws_ecr_repository.app.repository_url
 }
+
+output "microservices_ecr_urls" {
+  description = "URLs dos repositorios ECR dos microsservicos"
+  value       = { for k, v in aws_ecr_repository.microservices : k => v.repository_url }
+}
