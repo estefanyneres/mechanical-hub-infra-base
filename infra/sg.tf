@@ -96,6 +96,56 @@ resource "aws_security_group" "rds" {
   })
 }
 
+resource "aws_security_group_rule" "app_from_alb_core_service" {
+  type                     = "ingress"
+  from_port                = 30081
+  to_port                  = 30081
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.app.id
+  source_security_group_id = aws_security_group.alb.id
+  description              = "NodePort do core-service a partir do ALB"
+}
+
+resource "aws_security_group_rule" "app_from_alb_repair_service" {
+  type                     = "ingress"
+  from_port                = 30082
+  to_port                  = 30082
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.app.id
+  source_security_group_id = aws_security_group.alb.id
+  description              = "NodePort do repair-service a partir do ALB"
+}
+
+resource "aws_security_group_rule" "app_from_alb_stock_service" {
+  type                     = "ingress"
+  from_port                = 30083
+  to_port                  = 30083
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.app.id
+  source_security_group_id = aws_security_group.alb.id
+  description              = "NodePort do stock-service a partir do ALB"
+}
+
+resource "aws_security_group_rule" "app_from_alb_billing_service" {
+  type                     = "ingress"
+  from_port                = 30084
+  to_port                  = 30084
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.app.id
+  source_security_group_id = aws_security_group.alb.id
+  description              = "NodePort do billing-service a partir do ALB"
+}
+
+resource "aws_security_group_rule" "app_from_alb_sonarqube" {
+  type                     = "ingress"
+  from_port                = 30900
+  to_port                  = 30900
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.app.id
+  source_security_group_id = aws_security_group.alb.id
+  description              = "NodePort do SonarQube a partir do ALB"
+}
+
 resource "aws_security_group_rule" "rds_from_app" {
   type                     = "ingress"
   from_port                = 5432
