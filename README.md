@@ -4,12 +4,15 @@ Camada de infraestrutura mais fundamental do projeto mechanical-hub: é o primei
 repositório a ser aplicado, e todos os outros dependem dos recursos que ele cria para funcionar.
 
 Recursos de base do projeto mechanical-hub: VPC, subnets, Internet Gateway, route
-tables, os security groups (`alb`, `app`, `rds`, `lambda_auth`) e o repositório ECR.
+tables, os security groups (`alb`, `app`, `rds`, `lambda_auth`) e os repositórios
+ECR — o do monolito legado e, desde a Fase 4, mais 4 (`mechanical-hub-core-service`,
+`mechanical-hub-repair-service`, `mechanical-hub-stock-service`,
+`mechanical-hub-billing-service`), um por microsserviço.
 
 ## Tecnologias
 
 - **Terraform** (`hashicorp/aws ~> 5.0`) — toda a infraestrutura deste repo.
-- **AWS**: VPC, subnets, Internet Gateway, route tables, Security Groups, ECR.
+- **AWS**: VPC, subnets, Internet Gateway, route tables, Security Groups, 5 repositórios ECR (monolito + 4 microsserviços).
 - **GitHub Actions** — pipelines de validação (feature) e apply/destroy (main).
 - **S3** — backend remoto do state Terraform (`mechanical-hub-tfstate`), com locking nativo (`use_lockfile`) e versionamento, criado e gerenciado pela própria pipeline deste repo.
 
@@ -102,7 +105,8 @@ data "aws_ecr_repository" "app" {
 | `app_sg_id`           | ID do security group da aplicação      |
 | `rds_sg_id`           | ID do security group do RDS            |
 | `lambda_auth_sg_id`   | ID do security group da Lambda de autenticação |
-| `ecr_url`             | URL do repositório ECR                 |
+| `ecr_url`             | URL do repositório ECR do monolito legado |
+| `microservices_ecr_urls` | URLs dos 4 repositórios ECR dos microsserviços (mapa, por nome) |
 
 ## Pipelines
 
