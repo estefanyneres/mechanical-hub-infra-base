@@ -55,11 +55,11 @@ decide o que a pipeline faz, e todo push em `main` dispara a esteira.
 
 RFCs e ADRs ficam centralizados no repo da aplicação, para não duplicar/desincronizar entre os 6 repositórios. As diretamente relevantes para este repo:
 
-- [RFC-001 — Escolha da nuvem e restrições do AWS Academy Learner Lab](https://github.com/estefanyneres/mechanical-hub/blob/main/src/docs/fase3/documentacao/rfcs.md)
-- [RFC-005 — Credenciais estáticas renovadas por sessão (OIDC inviável)](https://github.com/estefanyneres/mechanical-hub/blob/main/src/docs/fase3/documentacao/rfcs.md)
-- [ADR-002 — Descoberta entre repositórios via data source](https://github.com/estefanyneres/mechanical-hub/blob/main/src/docs/fase3/documentacao/adrs.md)
-- [ADR-003 — Security groups centralizados em `infra-base`](https://github.com/estefanyneres/mechanical-hub/blob/main/src/docs/fase3/documentacao/adrs.md)
-- [ADR-005 — Separação de repositórios por taxa de mudança](https://github.com/estefanyneres/mechanical-hub/blob/main/src/docs/fase3/documentacao/adrs.md)
+- [RFC-001 — Escolha da nuvem e restrições do AWS Academy Learner Lab](https://github.com/estefanyneres/mechanical-hub-core-service/blob/main/docs/rfcs-fase3.md)
+- [RFC-005 — Credenciais estáticas renovadas por sessão (OIDC inviável)](https://github.com/estefanyneres/mechanical-hub-core-service/blob/main/docs/rfcs-fase3.md)
+- [ADR-002 — Descoberta entre repositórios via data source](https://github.com/estefanyneres/mechanical-hub-core-service/blob/main/docs/adrs-fase3.md)
+- [ADR-003 — Security groups centralizados em `infra-base`](https://github.com/estefanyneres/mechanical-hub-core-service/blob/main/docs/adrs-fase3.md)
+- [ADR-005 — Separação de repositórios por taxa de mudança](https://github.com/estefanyneres/mechanical-hub-core-service/blob/main/docs/adrs-fase3.md)
 
 ## Descoberta entre repos
 
