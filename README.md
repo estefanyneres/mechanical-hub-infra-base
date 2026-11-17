@@ -4,18 +4,21 @@ Camada de infraestrutura mais fundamental do projeto mechanical-hub: é o primei
 repositório a ser aplicado, e todos os outros dependem dos recursos que ele cria para funcionar.
 
 Recursos de base do projeto mechanical-hub: VPC, subnets, Internet Gateway, route
-tables, os security groups (`alb`, `app`, `rds`, `lambda_auth`) e o repositório ECR.
+tables, os security groups (`alb`, `app`, `rds`, `lambda_auth`) e os repositórios
+ECR — o do monolito legado e, desde a Fase 4, mais 4 (`mechanical-hub-core-service`,
+`mechanical-hub-repair-service`, `mechanical-hub-stock-service`,
+`mechanical-hub-billing-service`), um por microsserviço.
 
 ## Tecnologias
 
 - **Terraform** (`hashicorp/aws ~> 5.0`) — toda a infraestrutura deste repo.
-- **AWS**: VPC, subnets, Internet Gateway, route tables, Security Groups, ECR.
+- **AWS**: VPC, subnets, Internet Gateway, route tables, Security Groups, 5 repositórios ECR (monolito + 4 microsserviços).
 - **GitHub Actions** — pipelines de validação (feature) e apply/destroy (main).
 - **S3** — backend remoto do state Terraform (`mechanical-hub-tfstate`), com locking nativo (`use_lockfile`) e versionamento, criado e gerenciado pela própria pipeline deste repo.
 
 ## Diagrama de arquitetura
 
-![Infraestrutura AWS - Fase 3](docs/desenhos/mechanical-hub-infraestrutura-fase-03.jpg)
+![Infraestrutura AWS - Fase 3](docs/desenhos/mechanical-hub-infraestrutura-fase-04.jpg)
 
 ## Passos para execução e deploy
 
@@ -28,7 +31,7 @@ infra-database → auth-lambda → api-gateway** (e só depois o repo da aplica�
 sessão do AWS Academy, a ordem é a inversa: api-gateway → auth-lambda →
 infra-database → infra-k8s → infra-base.
 
-![Ordem de apply e destroy entre os repositorios](docs/desenhos/mechanical-hub-apply-destroy-repos-fase-03.jpg)
+![Ordem de apply e destroy entre os repositorios](docs/desenhos/mechanical-hub-apply-destroy-repos-fase-04.png)
 
 Mesmo padrão operacional do repo da aplicação: um arquivo commitado (`infra/pipeline.conf`)
 decide o que a pipeline faz, e todo push em `main` dispara a esteira.
@@ -52,11 +55,11 @@ decide o que a pipeline faz, e todo push em `main` dispara a esteira.
 
 RFCs e ADRs ficam centralizados no repo da aplicação, para não duplicar/desincronizar entre os 6 repositórios. As diretamente relevantes para este repo:
 
-- [RFC-001 — Escolha da nuvem e restrições do AWS Academy Learner Lab](https://github.com/estefanyneres/mechanical-hub/blob/main/src/docs/fase3/documentacao/rfcs.md)
-- [RFC-005 — Credenciais estáticas renovadas por sessão (OIDC inviável)](https://github.com/estefanyneres/mechanical-hub/blob/main/src/docs/fase3/documentacao/rfcs.md)
-- [ADR-002 — Descoberta entre repositórios via data source](https://github.com/estefanyneres/mechanical-hub/blob/main/src/docs/fase3/documentacao/adrs.md)
-- [ADR-003 — Security groups centralizados em `infra-base`](https://github.com/estefanyneres/mechanical-hub/blob/main/src/docs/fase3/documentacao/adrs.md)
-- [ADR-005 — Separação de repositórios por taxa de mudança](https://github.com/estefanyneres/mechanical-hub/blob/main/src/docs/fase3/documentacao/adrs.md)
+- [RFC-001 — Escolha da nuvem e restrições do AWS Academy Learner Lab](https://github.com/estefanyneres/mechanical-hub-core-service/blob/main/docs/rfcs-fase3.md)
+- [RFC-005 — Credenciais estáticas renovadas por sessão (OIDC inviável)](https://github.com/estefanyneres/mechanical-hub-core-service/blob/main/docs/rfcs-fase3.md)
+- [ADR-002 — Descoberta entre repositórios via data source](https://github.com/estefanyneres/mechanical-hub-core-service/blob/main/docs/adrs-fase3.md)
+- [ADR-003 — Security groups centralizados em `infra-base`](https://github.com/estefanyneres/mechanical-hub-core-service/blob/main/docs/adrs-fase3.md)
+- [ADR-005 — Separação de repositórios por taxa de mudança](https://github.com/estefanyneres/mechanical-hub-core-service/blob/main/docs/adrs-fase3.md)
 
 ## Descoberta entre repos
 
@@ -102,7 +105,8 @@ data "aws_ecr_repository" "app" {
 | `app_sg_id`           | ID do security group da aplicação      |
 | `rds_sg_id`           | ID do security group do RDS            |
 | `lambda_auth_sg_id`   | ID do security group da Lambda de autenticação |
-| `ecr_url`             | URL do repositório ECR                 |
+| `ecr_url`             | URL do repositório ECR do monolito legado |
+| `microservices_ecr_urls` | URLs dos 4 repositórios ECR dos microsserviços (mapa, por nome) |
 
 ## Pipelines
 
@@ -118,26 +122,3 @@ data "aws_ecr_repository" "app" {
   destruir conforme `DESTROY` — equivalente ao `main.yml` do repo da
   aplicação. É o único ponto que fala com a AWS de verdade; por isso não
   repete o `validate` que já rodou na feature.
-
-## Estrutura
-
-```
-mechanical-hub-infra-base/
-├── .github/workflows/
-│   ├── pipeline-infra-feature.yml
-│   └── pipeline-infra-main.yml
-├── docs/
-│   ├── desenhos/
-│   │   ├── mechanical-hub-infraestrutura-fase-03.jpg
-│   │   └── mechanical-hub-apply-destroy-repos-fase-03.jpg
-├── infra/
-│   ├── providers.tf
-│   ├── variables.tf
-│   ├── vpc.tf
-│   ├── sg.tf
-│   ├── ecr.tf
-│   ├── outputs.tf
-│   └── pipeline.conf
-├── .gitignore
-└── README.md
-```
