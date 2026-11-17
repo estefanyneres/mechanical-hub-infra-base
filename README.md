@@ -18,7 +18,7 @@ ECR — o do monolito legado e, desde a Fase 4, mais 4 (`mechanical-hub-core-ser
 
 ## Diagrama de arquitetura
 
-![Infraestrutura AWS - Fase 3](docs/desenhos/mechanical-hub-infraestrutura-fase-03.jpg)
+![Infraestrutura AWS - Fase 3](docs/desenhos/mechanical-hub-infraestrutura-fase-04.jpg)
 
 ## Passos para execução e deploy
 
@@ -133,6 +133,7 @@ mechanical-hub-infra-base/
 ├── docs/
 │   ├── desenhos/
 │   │   ├── mechanical-hub-infraestrutura-fase-03.jpg
+│   │   ├── mechanical-hub-infraestrutura-fase-04.jpg
 │   │   ├── mechanical-hub-apply-destroy-repos-fase-03.jpg
 │   │   └── mechanical-hub-apply-destroy-repos-fase-04.png
 ├── infra/
