@@ -122,28 +122,3 @@ data "aws_ecr_repository" "app" {
   destruir conforme `DESTROY` — equivalente ao `main.yml` do repo da
   aplicação. É o único ponto que fala com a AWS de verdade; por isso não
   repete o `validate` que já rodou na feature.
-
-## Estrutura
-
-```
-mechanical-hub-infra-base/
-├── .github/workflows/
-│   ├── pipeline-infra-feature.yml
-│   └── pipeline-infra-main.yml
-├── docs/
-│   ├── desenhos/
-│   │   ├── mechanical-hub-infraestrutura-fase-03.jpg
-│   │   ├── mechanical-hub-infraestrutura-fase-04.jpg
-│   │   ├── mechanical-hub-apply-destroy-repos-fase-03.jpg
-│   │   └── mechanical-hub-apply-destroy-repos-fase-04.png
-├── infra/
-│   ├── providers.tf
-│   ├── variables.tf
-│   ├── vpc.tf
-│   ├── sg.tf
-│   ├── ecr.tf
-│   ├── outputs.tf
-│   └── pipeline.conf
-├── .gitignore
-└── README.md
-```
