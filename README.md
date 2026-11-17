@@ -31,7 +31,7 @@ infra-database → auth-lambda → api-gateway** (e só depois o repo da aplica�
 sessão do AWS Academy, a ordem é a inversa: api-gateway → auth-lambda →
 infra-database → infra-k8s → infra-base.
 
-![Ordem de apply e destroy entre os repositorios](docs/desenhos/mechanical-hub-apply-destroy-repos-fase-03.jpg)
+![Ordem de apply e destroy entre os repositorios](docs/desenhos/mechanical-hub-apply-destroy-repos-fase-04.png)
 
 Mesmo padrão operacional do repo da aplicação: um arquivo commitado (`infra/pipeline.conf`)
 decide o que a pipeline faz, e todo push em `main` dispara a esteira.
@@ -133,7 +133,8 @@ mechanical-hub-infra-base/
 ├── docs/
 │   ├── desenhos/
 │   │   ├── mechanical-hub-infraestrutura-fase-03.jpg
-│   │   └── mechanical-hub-apply-destroy-repos-fase-03.jpg
+│   │   ├── mechanical-hub-apply-destroy-repos-fase-03.jpg
+│   │   └── mechanical-hub-apply-destroy-repos-fase-04.png
 ├── infra/
 │   ├── providers.tf
 │   ├── variables.tf
